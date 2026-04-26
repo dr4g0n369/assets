@@ -66,7 +66,7 @@
       fill=nodegreen!15!white, draw=nodegreen, text=textdark,
       below=1.4cm of grpo]
   (final) {Trained IDOR-Hunting Agent\\
-           \small\texttt{r4nd0m098/idor-hunt-qwen3-4b-grpo}};
+           \scriptsize\texttt{dr4g0n369/idor-hunt-qwen3-4b-grpo-merged}};
 
 % ── Arrows between phases ─────────────────────────────────────────────────
 \draw[connector, color=nodeorange!70]  (base.south)  -- (sft.north);
@@ -118,6 +118,8 @@
     \textcolor{nodeteal}{\textbf{Hybrid Reward Formula}}\\[4pt]
     \texttt{if env\_reward < 0:}\\
     \quad\texttt{final = env\_reward \quad\# veto}\\
+    \texttt{elif fp and env\_reward <= 0.05:}\\
+    \quad\texttt{final = -0.2 \quad\quad\quad\# FP veto}\\
     \texttt{else:}\\
     \quad\texttt{final = env×0.7 + sup×0.3}
   };
@@ -133,13 +135,11 @@
       inner sep=8pt,
       left=1.1cm of grpo, yshift=0cm]
   (vulns) {%
-    \textcolor{accent1}{\textbf{Target Vulnerabilities}}\\[4pt]
-    \textcolor{accent1}{$\bullet$} Horizontal IDOR\\
-    \quad\small\texttt{GET /api/orders/<id>}\\[2pt]
-    \textcolor{accent1}{$\bullet$} Vertical Privesc\\
-    \quad\small\texttt{GET /api/reports}\\[2pt]
-    \textcolor{accent1}{$\bullet$} Critical Privesc\\
-    \quad\small\texttt{GET /api/admin/config}
+    \textcolor{accent1}{\textbf{Target Tasks}}\\[4pt]
+    \textcolor{accent1}{$\bullet$} IDOR (Orders)\\
+    \textcolor{accent1}{$\bullet$} IDOR (Docs)\\
+    \textcolor{accent1}{$\bullet$} Privilege Escalation\\
+    \textcolor{accent1}{$\bullet$} Access Control
   };
 
 \draw[->, line width=0.8pt, color=accent1!60, dashed,
