@@ -53,10 +53,6 @@
   label/.style={font=\sffamily\tiny, text=textdim, midway}
 ]
 
-% ── Title ─────────────────────────────────────────────────────────────────
-\node[text=textdark, font=\sffamily\bfseries\large] at (5.75, 0.95)
-  {GRPO Environment Loop — Per Training Step};
-
 % ── Main column nodes (x = 2.2) ───────────────────────────────────────────
 \node[box, fill=nodeblue!15!white, draw=nodeblue]
   (model) at (2.2, 0.1) {\textbf{Model (Qwen3-4B)}\\[2pt]\scriptsize Generates response token-by-token};
@@ -87,11 +83,11 @@
 
 \node[box, fill=nodepurple!12!white, draw=nodepurple,
       right=2.6cm of negcheck]
-  (supervisor) {\textbf{Gemma 3 12B Supervisor}\\[2pt]\scriptsize Evaluates strategy quality\\Returns score $\in$ [-1, +1]};
+  (supervisor) {\textbf{Gemma 3 12B Supervisor}\\[2pt]\scriptsize Evaluates strategy quality $\in$ [-1, +1]\\Flags false positives (FP)};
 
 \node[box, fill=nodeteal!15!white, draw=nodeteal,
       below=0.85cm of negcheck]
-  (hybrid) {\textbf{Hybrid Reward}\\[2pt]\scriptsize \texttt{env×0.7 + sup×0.3}\\or hard veto if env < 0};
+  (hybrid) {\textbf{Hybrid Reward}\\[2pt]\scriptsize \texttt{env×0.7 + sup×0.3}\\Hard veto if env < 0\\FP penalty if flagged};
 
 \node[box, fill=nodeblue!12!white, draw=nodeblue!70,
       below=0.9cm of hybrid]
@@ -129,11 +125,10 @@
 % ── Feedback loop arrow (right side) ─────────────────────────────────────
 \draw[->, line width=1.4pt, color=nodeblue!50, rounded corners=6pt]
   (grpo.south) -- ++(0,-0.5)
-               -- ++(8.0,0)
-               -- ++(0,12.5)
-               -- (model.east)
-  node[pos=0.12, right=2pt, font=\sffamily\tiny, text=textdim]
-    {next step / next episode};
+               -| ([xshift=0.8cm]supervisor.east)
+               |- (model.east);
+
+\node[font=\sffamily\tiny, text=textdim, anchor=west] at ([xshift=0.9cm]supervisor.east) {next step / next episode};
 
 % ── Reward scale annotation ───────────────────────────────────────────────
 \node[rectangle, rounded corners=5pt,
@@ -147,13 +142,20 @@
     \texttt{+0.8} Manager privesc\\
     \texttt{+0.5} IDOR (non-admin)\\
     \texttt{+0.1} Recon / foothold\\
+    \texttt{−0.05} Wrong path\\
     \texttt{−0.1} Repeated request\\
     \texttt{−0.15} Public endpoint\\
+    \texttt{−0.2} False positive\\
     \texttt{−0.5} Step limit hit
   };
 
 \draw[->, line width=0.8pt, color=nodegreen!50, dashed]
   (scale.east) -- (envrew.west);
+
+% ── Title ─────────────────────────────────────────────────────────────────
+\path (current bounding box.north);
+\node[text=textdark, font=\sffamily\bfseries\large, above=0.3cm] at (current bounding box.north)
+  {GRPO Environment Loop — Per Training Step};
 
 \end{tikzpicture}
 \end{document}
